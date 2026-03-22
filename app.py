@@ -55,9 +55,23 @@ def show_legal():
         st.markdown("""
         **New Voter Definition:** Voters registered for less than 2 years as of March 21, 2026, are identified as 'New Voters.' Their participation grades may show 'N/A' if no eligible elections have occurred since their registration date.
         
-        **Privacy:** No search data is stored... [Rest of your disclaimer]
-        """)
+        ### **Methodology**
+        Grades are calculated using an **Eligibility-Adjusted Participation Model**. Unlike standard voter scores that penalize residents for missing elections they were not eligible for, our system normalizes participation based on:
+        * **Registration Date:** We only count elections that occurred *after* you registered in the District.
+        * **Ward-Specific Eligibility:** For Special Elections, you are only graded on contests where your specific Ward was eligible to participate.
+        * **The Scale:** Participation percentages are converted to a standard A–F academic scale.
 
+        ### **Privacy & Data Security**
+        At Conformalytics, we prioritize data integrity and user privacy:
+        * **No Data Retention:** We do not store, track, or save the names or addresses entered into this tool. Your search is processed in real-time and cleared immediately upon closing the session.
+        * **Public Records:** This tool utilizes the public voter file provided by the District of Columbia Board of Elections (DCBOE). We do not display sensitive Personally Identifiable Information (PII) such as birth dates or social security numbers.
+        * **Encryption:** This application is served over an encrypted (SSL) connection to ensure your search remains secure.
+
+        ### **Legal Disclaimer**
+        This tool is provided for **informational and educational purposes only**. While Conformalytics strives for accuracy, the data is derived from third-party public records which may contain clerical errors or update lags. 
+        
+        This tool does not constitute an official government record or an official statement of your voting status. To verify your official registration or voting history, please visit the [DC Board of Elections website](https://dcboe.org). Conformalytics is an independent consultancy and is not affiliated with, or endorsed by, any government agency.
+        """)
 # --- UI ---
 # st.image("dc_superman_crest.png", width=120) 
 st.title("🛡️ Super Voter Identifier")
