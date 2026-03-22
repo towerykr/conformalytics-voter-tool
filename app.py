@@ -85,7 +85,7 @@ with st.container():
         label="Street Number", 
         placeholder="e.g., 123", 
         help="For an address like '123 Lane SE', only enter the numeric portion: 123"
-    ).strip())
+    ).strip()
 
 if lname and snum:
     results = df[(df['LNAME'] == lname) & (df['StreetNum'].astype(str) == snum)]
