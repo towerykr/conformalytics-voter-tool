@@ -29,8 +29,36 @@ def show_grades(v):
     g2.metric("Primary Elections", v['Primary_Grade'])
     g3.metric("Special Elections", v['Special_Grade'])
     
+    def show_grades(v):
+    st.divider()
+    
+    # Clean up the suffix display so it doesn't show "nan"
+    suffix = str(v['NSUFFIX']) if pd.notnull(v['NSUFFIX']) and str(v['NSUFFIX']).lower() != 'nan' else ""
+    full_name = f"{v['FNAME']} {v['LNAME']} {suffix}".strip()
+    
+    st.subheader(f"Scorecard for {full_name}")
+    
+    # Participation Metrics
+    g1, g2, g3 = st.columns(3)
+    
+    g1.metric("General", v['General_Grade'])
+    g2.metric("Primary", v['Primary_Grade'])
+    g3.metric("Specials", v['Special_Grade'])
+    
+    # Methodology Caption
     st.caption(f"**Methodology:** Grades are eligibility-adjusted based on Ward {v['WRD_STR']} and your District registration year ({int(v['RegYear'])}).")
 
+    # Civic Call to Action
+    st.info(f"""
+    **Your Vote, Your Voice**
+    
+    While every campaign defines a 'supervoter' differently, what is most important is that you continue to exercise your right to vote! 
+    
+    If you were disappointed with your grade, **make a plan to vote** in the next election. In the District, voting is accessible and convenient:
+    * 📬 **By Mail:** Every registered voter is mailed a ballot.
+    * 🏛️ **Early In-Person:** Vote at *any* early voting center city-wide.
+    * 🗳️ **Election Day:** Vote at *any* voting precinct in the District.
+    """)
 def show_disclaimers():
     with st.expander("Methodology, Privacy & Legal Disclaimer"):
         st.markdown("""
