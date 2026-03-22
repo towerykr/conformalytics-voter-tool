@@ -81,7 +81,7 @@ st.markdown("### Are You A Supervoter?")
 with st.container():
     c1, c2 = st.columns(2)
     lname = c1.text_input("Last Name").upper().strip()
-    snum = c2.text_input("Street Number").strip()
+    snum = c2.text_input("Numeric Portion of Address (Example: 123 Lane, only enter 123)").strip()
 
 if lname and snum:
     results = df[(df['LNAME'] == lname) & (df['StreetNum'].astype(str) == snum)]
