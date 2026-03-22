@@ -67,6 +67,18 @@ if lname_input and snum_input:
         # Match the selection back to the data
         voter = results[results['Label'] == choice].iloc[0]
         show_grades(voter)
+
+    with st.expander("Methodology, Privacy & Legal Disclaimer"):
+    st.markdown("""
+    **Methodology**
+    Our grades are 'Eligibility-Adjusted.' We only count elections that occurred after your DC registration date and within your specific Ward...
+    
+    **Privacy**
+    We do not store your search data. This tool uses public DCBOE records...
+    
+    **Disclaimer**
+    For informational purposes only. Not an official government record...
+    """)
     
     else:
         # Immediate result if only one person matches
