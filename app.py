@@ -39,11 +39,15 @@ def show_grades(v):
     st.caption(f"**Methodology:** Grades are eligibility-adjusted based on Ward {v['WRD_STR']} and your District registration year ({int(v['RegYear'])}).")
 
     # Civic Call to Action
-    st.success(f"""
+    st.info(f"""
     **Your Vote, Your Voice**
-    While every campaign defines a 'supervoter' differently, what's most important is that you continue to exercise your right to vote!
     
-    If you were disappointed with your grade, **make a plan to vote**. In DC we can do it by mail, early in-person anywhere at a polling station, or on election day at any voting precinct.
+    While every campaign defines a 'supervoter' differently, what is most important is that you continue to exercise your right to vote! 
+    
+    If you were disappointed with your grade, **make a plan to vote** in the next election. In the District, voting is accessible and convenient:
+    * 📬 **By Mail:** Every registered voter is mailed a ballot.
+    * 🏛️ **Early In-Person:** Vote at *any* early voting center city-wide.
+    * 🗳️ **Election Day:** Vote at *any* voting precinct in the District.
     """)
 
 def show_legal():
