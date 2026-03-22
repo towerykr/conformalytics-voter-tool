@@ -1,32 +1,14 @@
 import streamlit as st
 import pandas as pd
 
-# Load the data
+# Load the data generated in Part 1
 df = pd.read_csv('voter_grades_app.csv')
 
 st.set_page_config(page_title="Conformalytics | Super Voter", page_icon="🛡️")
 
-# --- DEFINE FUNCTIONS FIRST ---
-def show_grades(v):
-    st.divider()
-    
-    # Clean up the suffix display so it doesn't show "nan"
-    # We check if it's a string and not "nan"
-    suffix = str(v['NSUFFIX']) if pd.notnull(v['NSUFFIX']) and str(v['NSUFFIX']).lower() != 'nan' else ""
-    full_name = f"{v['FNAME']} {v['LNAME']} {suffix}".strip()
-    
-    st.subheader(f"Scorecard for {full_name}")
-    
-    g1, g2, g3 = st.columns(3)
-    g1.metric("General", v['General_Grade'])
-    g2.metric("Primary", v['Primary_Grade'])
-    g3.metric("Specials", v['Special_Grade'])
-    st.caption("*Grades are eligibility-adjusted based on your District registration date.*")
-
-# --- UI AND SEARCH LOGIC ---
+# Use your new logo colors (Green on Dark)
 st.title("🛡️ Super Voter Identifier")
-# Update: Changed to your requested headline
-st.markdown("### Are You A Supervoter?")
+st.markdown("### Precision Data for the District")
 
 with st.container():
     c1, c2 = st.columns(2)
@@ -40,15 +22,20 @@ if lname and snum:
         st.error("No records found. Please check your spelling and address.")
     elif len(results) > 1:
         st.info("Multiple voters found at this address.")
-        
-        # Clean up labels for the selection dropdown as well
-        results = results.copy() # Avoid warning
-        results['Suffix_Clean'] = results['NSUFFIX'].apply(lambda x: str(x) if pd.notnull(x) and str(x).lower() != 'nan' else "")
-        results['Selection_Label'] = results['FNAME'] + " " + results['Suffix_Clean'] + " (Reg: " + results['RegYear'].astype(str) + ")"
-        
-        choice = st.selectbox("Select your record:", results['Selection_Label'])
-        voter = results[results['Selection_Label'] == choice].iloc[0]
+        # Collision handling: distinguish by First Name and Registration Year
+        choice = st.selectbox("Select your record:", results['FNAME'] + " (Registered " + results['RegYear'].astype(str) + ")")
+        selected_fname = choice.split(" ")[0]
+        voter = results[results['FNAME'] == selected_fname].iloc[0]
         show_grades(voter)
     else:
         voter = results.iloc[0]
         show_grades(voter)
+
+def show_grades(v):
+    st.divider()
+    st.subheader(f"Scorecard for {v['FNAME']} {v['LNAME']}")
+    g1, g2, g3 = st.columns(3)
+    g1.metric("General", v['General_Grade'])
+    g2.metric("Primary", v['Primary_Grade'])
+    g3.metric("Specials", v['Special_Grade'])
+    st.caption("*Grades are eligibility-adjusted based on your District registration date.*")
