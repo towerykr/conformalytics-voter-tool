@@ -82,7 +82,7 @@ with st.container():
     c1, c2 = st.columns(2)
     lname = c1.text_input("Last Name").upper().strip()
     snum = c2.text_input(
-        label="Street Number", 
+        label="Numeric Portion of Address Only", 
         placeholder="e.g., 123", 
         help="For an address like '123 Lane SE', only enter the numeric portion: 123"
     ).strip()
