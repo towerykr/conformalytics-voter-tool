@@ -3,7 +3,8 @@ import pandas as pd
 
 # 1. LOAD THE DATA
 try:
-    df = pd.read_csv('voter_grades_app.csv')
+    # Use read_parquet instead of read_csv
+    df = pd.read_parquet('voter_grades_app.parquet')
 except FileNotFoundError:
     st.error("Data file not found. Please ensure 'voter_grades_app.csv' is in your GitHub repository.")
     st.stop()
