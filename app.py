@@ -2,14 +2,15 @@ import streamlit as st
 import pandas as pd
 
 # 1. LOAD THE DATA
+# Using Parquet for the large voter file and CSV for the summary
 try:
-    # Use read_parquet instead of read_csv
     df = pd.read_parquet('voter_grades_app.parquet')
+    counts_df = pd.read_csv('voter_counts_summary.csv')
 except FileNotFoundError:
-    st.error("Data file not found. Please ensure 'voter_grades_app.csv' is in your GitHub repository.")
+    st.error("Data files not found. Please ensure 'voter_grades_app.parquet' and 'voter_counts_summary.csv' are in your GitHub folder.")
     st.stop()
 
-st.set_page_config(page_title="Conformalytics | Are You A Super Voter?", page_icon="🛡️")
+st.set_page_config(page_title="Conformalytics | Are You A Supervoter?", page_icon="🛡️", layout="wide")
 
 # --- STEP 1: DEFINE DISPLAY FUNCTIONS ---
 
@@ -22,16 +23,31 @@ def show_grades(v):
     
     st.subheader(f"Scorecard for {full_name}")
     
-    # Participation Metrics
-    g1, g2, g3 = st.columns(3)
+    # New Voter & Habit Badges
+    col_a, col_b = st.columns(2)
+    with col_a:
+        if v['Is_New_Voter'] == 'Yes':
+            st.info("👋 **Welcome!** You are a New Voter in the District (registered within the last 2 years).")
+        else:
+            st.write(f"**Registration Year:** {int(v['RegYear'])}")
     
-    # Using your preferred labels
+    with col_b:
+        habit = v['Early_Habit']
+        if "Frequently" in habit:
+            st.success(f"🏅 {habit}")
+        elif "Sometimes" in habit:
+            st.info(f"📊 {habit}")
+        else:
+            st.warning(f"🗳️ {habit}")
+
+    # Participation Metrics
+    st.write("### Your Participation Grades")
+    g1, g2, g3 = st.columns(3)
     g1.metric("General Elections", v['General_Grade'])
     g2.metric("Primary Elections", v['Primary_Grade'])
     g3.metric("Special Elections", v['Special_Grade'])
     
-    # Methodology Caption
-    st.caption(f"**Methodology:** Grades are eligibility-adjusted based on Ward {v['WRD_STR']} and your District registration year ({int(v['RegYear'])}).")
+    st.caption(f"**Methodology:** Grades are eligibility-adjusted based on Ward {v['WRD_STR']} and your District registration year.")
 
     # Civic Call to Action
     st.info(f"""
@@ -52,6 +68,7 @@ def show_disclaimers():
         Grades are calculated using an **Eligibility-Adjusted Participation Model**. Unlike standard voter scores that penalize residents for missing elections they were not eligible for, our system normalizes participation based on:
         * **Registration Date:** We only count elections that occurred *after* you registered in the District.
         * **Ward-Specific Eligibility:** For Special Elections, you are only graded on contests where your specific Ward was eligible to participate.
+        * **New Voter Definition:** Voters registered for less than 2 years as of March 21, 2026, are identified as 'New Voters.' Their participation grades may show 'N/A' if no eligible elections have occurred since their registration date.
         * **The Scale:** Participation percentages are converted to a standard A–F academic scale.
 
         ### **Privacy & Data Security**
@@ -66,45 +83,48 @@ def show_disclaimers():
         This tool does not constitute an official government record or an official statement of your voting status. To verify your official registration or voting history, please visit the [DC Board of Elections website](https://dcboe.org). Conformalytics is an independent consultancy and is not affiliated with, or endorsed by, any government agency.
         """)
 
-# --- STEP 2: BRANDING & UI ---
+# --- STEP 2: APP TABS ---
 
-# Placeholder for your DC Superman Crest
-# st.image("dc_superman_crest.png", width=120) 
+tab1, tab2 = st.tabs(["🔍 Supervoter Lookup", "📊 Win Number Calculator"])
 
-st.title("🛡️ Super Voter Identifier")
-st.markdown("### Are You A Supervoter?")
+# --- TAB 1: SUPERVOTER LOOKUP ---
+with tab1:
+    # Optional: st.image("dc_superman_crest.png", width=120) 
+    st.title("🛡️ Super Voter Identifier")
+    st.markdown("## Are You A Supervoter?")
 
-# --- STEP 3: TWO-STEP SEARCH LOGIC ---
+    with st.container():
+        c1, c2 = st.columns(2)
+        lname_input = c1.text_input("Last Name", key="lookup_lname").upper().strip()
+        snum_input = c2.text_input("Street Number", key="lookup_snum").strip()
 
-with st.container():
-    c1, c2 = st.columns(2)
-    lname_input = c1.text_input("Last Name").upper().strip()
-    snum_input = c2.text_input("Street Number (Numeric Part of Your Address ONLY)").strip()
-
-if lname_input and snum_input:
-    # Initial Search
-    results = df[(df['LNAME'] == lname_input) & (df['StreetNum'].astype(str) == snum_input)]
-    
-    if results.empty:
-        # Added your custom registration status check message
-        st.error("No records found at this address. Please check your spelling and street number. If that still does not work, check your voter registration status with DCBOE!")
-    
-    elif len(results) > 1:
-        st.info("Multiple voters were found at this address. Please select your specific record:")
+    if lname_input and snum_input:
+        results = df[(df['LNAME'] == lname_input) & (df['StreetNum'].astype(str) == snum_input)]
         
-        results = results.copy()
-        results['Suffix_Clean'] = results['NSUFFIX'].apply(lambda x: str(x) if pd.notnull(x) and str(x).lower() != 'nan' else "")
-        results['Label'] = results['FNAME'] + " " + results['Suffix_Clean'] + " (Reg: " + results['RegYear'].astype(str) + ")"
+        if results.empty:
+            st.error("No records found at this address. Please check your spelling and street number. If that still does not work, check your voter registration status with DCBOE!")
         
-        choice = st.selectbox("Who are you looking for?", results['Label'])
+        elif len(results) > 1:
+            st.info("Multiple voters were found at this address. Please select your specific record:")
+            results = results.copy()
+            results['Suffix_Clean'] = results['NSUFFIX'].apply(lambda x: str(x) if pd.notnull(x) and str(x).lower() != 'nan' else "")
+            results['Label'] = results['FNAME'] + " " + results['Suffix_Clean'] + " (Reg: " + results['RegYear'].astype(str) + ")"
+            
+            choice = st.selectbox("Who are you looking for?", results['Label'])
+            voter = results[results['Label'] == choice].iloc[0]
+            show_grades(voter)
         
-        voter = results[results['Label'] == choice].iloc[0]
-        show_grades(voter)
-    
-    else:
-        voter = results.iloc[0]
-        show_grades(voter)
+        else:
+            voter = results.iloc[0]
+            show_grades(voter)
 
-# --- STEP 4: FOOTER ---
-st.write("\n")
-show_disclaimers()
+# --- TAB 2: WIN NUMBER CALCULATOR ---
+with tab2:
+    st.title("🗳️ Strategic Win Number Calculator")
+    st.markdown("### Step 1: Select Your District")
+    
+    col_a, col_b = st.columns(2)
+    with col_a:
+        # Get clean list of Wards
+        ward_list = sorted(counts_df['WRD_STR'].unique(), key=lambda x: int(x))
+        selected_wrd = st
