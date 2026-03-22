@@ -78,7 +78,7 @@ st.markdown("### Are You A Supervoter?")
 with st.container():
     c1, c2 = st.columns(2)
     lname_input = c1.text_input("Last Name").upper().strip()
-    snum_input = c2.text_input("Street Number (Numeric Part of Your Address").strip()
+    snum_input = c2.text_input("Street Number (Numeric Part of Your Address)").strip()
 
 if lname_input and snum_input:
     # Initial Search
