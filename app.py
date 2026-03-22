@@ -9,7 +9,7 @@ except FileNotFoundError:
     st.error("Data file not found. Please ensure 'voter_grades_app.csv' is in your GitHub repository.")
     st.stop()
 
-st.set_page_config(page_title="Conformalytics | Super Voter", page_icon="🛡️")
+st.set_page_config(page_title="Conformalytics | Are You A Super Voter?", page_icon="🛡️")
 
 # --- STEP 1: DEFINE DISPLAY FUNCTIONS ---
 
@@ -25,9 +25,9 @@ def show_grades(v):
     # Participation Metrics
     g1, g2, g3 = st.columns(3)
     
-    g1.metric("General", v['General_Grade'])
-    g2.metric("Primary", v['Primary_Grade'])
-    g3.metric("Specials", v['Special_Grade'])
+    g1.metric("General Elections", v['General_Grade'])
+    g2.metric("Primary Elections", v['Primary_Grade'])
+    g3.metric("Special Elections", v['Special_Grade'])
     
     st.caption(f"**Methodology:** Grades are eligibility-adjusted based on Ward {v['WRD_STR']} and your District registration year ({int(v['RegYear'])}).")
 
@@ -72,11 +72,11 @@ if lname_input and snum_input:
     results = df[(df['LNAME'] == lname_input) & (df['StreetNum'].astype(str) == snum_input)]
     
     if results.empty:
-        st.error("No records found at this address. Please check your spelling and street number.")
+        st.error("No records found at this address. Please check your spelling and street number. If that still does not work, check your voter registration status with DCBOE!")
     
     elif len(results) > 1:
         # Step 2: Disambiguation (Collision Handling)
-        st.info("Multiple voters found at this address. Please select your specific record:")
+        st.info("Multiple voters were found at this address. Please select your specific record:")
         
         # Create a clean label for the dropdown to distinguish residents
         results = results.copy()
